@@ -1,0 +1,10 @@
+langgraph
+langchain
+langchain-openai
+langchain-core
+azure-search-documents
+azure-core
+fastapi
+uvicorn
+pydantic
+python-dotenv
