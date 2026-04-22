@@ -1,11 +1,12 @@
 from langchain.tools import tool
-from app.rag.retriever import search_company_docs
+from app.rag.retriever import search_company_docs as search_company_docs_raw
 from app.memory.long_term import save_memory
 
 @tool
 def search_docs(query: str) -> str:
     """Search internal documents for information."""
-    return search_company_docs(query)
+    result_str, _ = search_company_docs_raw(query)
+    return result_str
 
 @tool
 def store_preference(user_id: str, key: str, value: str) -> str:

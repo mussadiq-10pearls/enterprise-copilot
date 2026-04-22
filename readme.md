@@ -165,3 +165,13 @@ json
   "thread_id": "optional_conversation_id"
 }
 
+## Safety & Observability
+
+### Prompt Injection Protection
+The agent uses `safety/injection.py` to scan every user message for known jailbreak patterns. If detected, the request is refused without calling the LLM.
+
+### Groundedness Check
+The `safety/groundedness.py` module implements a heuristic to compare the final answer with retrieved document chunks. While not currently wired into the agent flow, it is ready for integration and demonstrates the required safety consideration.
+
+### Tracing with LangSmith
+LangSmith tracing is enabled (free tier). All agent runs are logged and can be inspected for debugging and monitoring.
