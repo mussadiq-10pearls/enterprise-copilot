@@ -111,6 +111,7 @@ pip install -r requirements.txt
 
 Create a .env file in the project root. You will need the following keys:
 
+```
 Variable	Description	Where to find (refer to .env.example file)
 AZURE_SEARCH_ENDPOINT	Azure AI Search service URL	Portal → Azure AI Search → Overview → Url
 AZURE_SEARCH_KEY	Admin key (primary or secondary)	Portal → Azure AI Search → Keys
@@ -121,6 +122,7 @@ AZURE_OPENAI_DEPLOYMENT	Deployment name of your chat model	Foundry → Deploymen
 MEMORY_FILE	(Optional) Path to long‑term memory JSON file	Defaults to data/long_term_memory.json
 API_HOST	(Optional) Host for FastAPI	Default 127.0.0.1
 API_PORT	(Optional) Port for FastAPI	Default 8000
+```
 
 ### 6. Index your PDF documents (one‑time)
 
