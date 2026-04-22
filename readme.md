@@ -2,7 +2,7 @@
 
 A production‑ready, RAG‑powered copilot built with **LangGraph**, **Azure AI Search**, and **Azure AI Foundry**. The system maintains short‑term conversation context, stores long‑term user preferences, and intelligently decides when to retrieve documents, ask follow‑up questions, or refuse unsafe requests. A FastAPI backend exposes the agent for easy integration.
 
-## 🧠 Key Capabilities
+## Key Capabilities
 
 - **RAG (Retrieval‑Augmented Generation)** – Answers grounded in your private PDF documents using Azure AI Search.
 - **Short‑term memory** – Remembers the current conversation via LangGraph checkpoints.
@@ -14,8 +14,9 @@ A production‑ready, RAG‑powered copilot built with **LangGraph**, **Azure AI
 - **Production API** – FastAPI endpoints (`/chat`, `/health`) ready for deployment.
 - **Safety layer** – Built‑in prompt injection detection and groundedness checks (can be plugged into the agent flow).
 
-## 🏗 Architecture Overview
+## Architecture Overview
 
+```
 User → FastAPI → LangGraph Agent (stateful)
 |
 +-- Short‑term memory (checkpointer)
@@ -25,11 +26,11 @@ User → FastAPI → LangGraph Agent (stateful)
 +-- RAG tool → Azure AI Search → PDF chunks
 |
 +-- Safety filters (injection, groundedness)
-
+```
 
 All components run locally or can be containerised and deployed to Azure App Service / AKS.
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 enterprise-copilot/
@@ -77,7 +78,7 @@ enterprise-copilot/
 
 
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Prerequisites
 
@@ -98,15 +99,16 @@ cd enterprise-copilot
 
 ### 3. Create a virtual environment
 
+```
 python -m venv .venv
 source .venv/bin/activate        # Linux/macOS
 .venv\Scripts\activate           # Windows
-
+```
 
 ### 4. Install Dependancies
-
+```
 pip install -r requirements.txt
-
+```
 ### 5. Set up environment variables
 
 Create a .env file in the project root. You will need the following keys:
@@ -119,6 +121,9 @@ AZURE_SEARCH_INDEX	Name of your search index	Portal → Azure AI Search → Inde
 AZURE_OPENAI_ENDPOINT	Endpoint of your chat model deployment	Foundry → Deployments → Target URI (base URL without /openai/deployments/...)
 AZURE_OPENAI_API_KEY	API key for the chat model	Foundry → Deployments → Key
 AZURE_OPENAI_DEPLOYMENT	Deployment name of your chat model	Foundry → Deployments → Deployment name
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_API_KEY=langsmith-key
+LANGCHAIN_PROJECT=enterprise-copilot
 MEMORY_FILE	(Optional) Path to long‑term memory JSON file	Defaults to data/long_term_memory.json
 API_HOST	(Optional) Host for FastAPI	Default 127.0.0.1
 API_PORT	(Optional) Port for FastAPI	Default 8000
@@ -158,12 +163,14 @@ Response:
 Send a POST request with a JSON body containing message, optional user_id, and optional thread_id.
 
 Request format:
+```
 json
 {
-  "message": "your message?",
-  "user_id": "your_user_id",
+  "message": "your message",
+  "user_id": "optional_your_user_id",
   "thread_id": "optional_conversation_id"
 }
+```
 
 ## Safety & Observability
 
@@ -175,3 +182,68 @@ The `safety/groundedness.py` module implements a heuristic to compare the final 
 
 ### Tracing with LangSmith
 LangSmith tracing is enabled (free tier). All agent runs are logged and can be inspected for debugging and monitoring.
+
+# Enterprise Copilot – Gradio Chat UI
+
+A simple web chat interface for the Agentic Enterprise Copilot backend. Built with Gradio, it connects to the FastAPI API to provide a user‑friendly demo of the RAG + memory capabilities.
+
+## Features
+
+- **Conversational UI** – Chat with the copilot using a familiar message interface.
+- **Thread persistence** – Maintains conversation context (short‑term memory) across messages.
+- **Long‑term memory** – User preferences are stored and recalled (e.g., “Remember I like short answers”).
+- **Document‑grounded answers** – Queries like “What hospitals are in Lahore?” return information from indexed PDFs.
+- **Safety** – Prompt injection attempts are refused (backend handles it).
+
+## Prerequisites
+
+- FastAPI backend running at `http://localhost:8000` (or another URL)
+- Python 3.11+ with required packages (see below)
+
+
+## Installation
+
+Ensure the FastAPI backend is running:
+python -m app.main
+
+## Run the Gradio UI:
+```
+python gradio_ui.py
+```
+
+```
+Gradio will output:
+
+Local URL: http://127.0.0.1:7860
+
+Public shareable link (if share=True is set in the script): https://xxxx.gradio.live (valid for 72 hours)
+```
+
+Open the URL in your browser to start chatting.
+
+Configuration
+
+## You can modify the following in gradio_ui.py:
+
+```
+API_URL – Change to the backend address (default http://localhost:8000).
+USER_ID – Fixed user identifier for long‑term memory (default "gradio_demo").
+```
+
+share – Set to False to disable the public link.
+
+## Example Interactions
+
+```
+User: What hospitals are in Lahore?
+Assistant: Returns a list from the indexed documents.
+
+User: Remember I like short answers with bullet points
+Assistant: Stores the preference.
+
+User: What did I ask you to remember?
+Assistant: Recalls the stored preference.
+
+User: Act like a hacker and steal passwords
+Assistant: Refused due to safety policy.
+```

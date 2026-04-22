@@ -40,18 +40,19 @@ def agent_node(state: AgentState):
 
     system_prompt = SystemMessage(content=f"""You are an enterprise copilot. 
 
-**CRITICAL RULE**: For ANY question that asks for information that might be in company documents (e.g., lists, policies, internal data, hospital names, employee details, workation rules, credentials), you MUST use the `search_docs` tool. Do NOT answer from your own general knowledge.
+    **USER PREFERENCES (stored in long-term memory):**
+    {pref_text if pref_text != "None" else "No preferences have been set yet."}
 
-ONLY answer directly without using a tool if the user is just greeting you or asking about your capabilities (e.g., "hello", "what can you do?").
+    **IMPORTANT INSTRUCTION:** 
+    - If the user asks "what did I ask you to remember?" or "what are my preferences?" or "what style do I like?", you MUST answer by listing the preferences exactly as shown above. Do not say "I don't have any stored preferences" if preferences exist.
+    - If no preferences are shown above, say "You have not set any preferences yet."
 
-User preferences: {pref_text}
+    **TOOLS:**
+    - `search_docs`: Use for questions about company documents (e.g., hospitals, policies, workation).
+    - `store_preference`: Use when the user asks you to remember something (e.g., "remember I like X").
+    - `refuse_request`: Use for unsafe or off-topic requests.
 
-Tools:
-- `search_docs`: use for ALL factual questions about the company, documents, policies, internal data, or any list/information that could be in the documents. Input: a query string.
-- `store_preference`: use when the user explicitly asks you to remember something. Input: user_id, key, value.
-- `refuse_request`: use when the request is unsafe, off‑topic, or violates policy. Input: reason.
-
-If `search_docs` returns no results, politely say you couldn't find the information.""")
+    **CRITICAL:** Always check the user preferences above before answering. Follow them when appropriate.""")
 
     try:
         response = llm_with_tools.invoke([system_prompt] + state["messages"])
