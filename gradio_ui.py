@@ -3,26 +3,27 @@ import requests
 import uuid
 
 API_URL = "http://localhost:8000"
-sessions = {}
+USER_ID = "gradio_demo"
+
+# Store thread_id for the current session
+thread_id = None
 
 def chat_with_copilot(message, history):
-    session_id = str(uuid.uuid4())
-    thread_id = sessions.get(session_id)
+    global thread_id
     try:
         response = requests.post(
             f"{API_URL}/chat",
-            json={"message": message, "user_id": "gradio_demo", "thread_id": thread_id},
-            timeout=30
+            json={"message": message, "user_id": USER_ID, "thread_id": thread_id},
+            timeout=60
         )
         if response.status_code == 200:
             data = response.json()
-            sessions[session_id] = data["thread_id"]
+            thread_id = data["thread_id"]  # update for next turn
             return data["response"]
         else:
             return f"Error: {response.status_code}"
     except Exception as e:
         return f"Error: {str(e)}"
 
-# Remove theme and examples if not supported
 demo = gr.ChatInterface(fn=chat_with_copilot)
-demo.launch(share=True)
+demo.launch(server_name="0.0.0.0", server_port=7860)

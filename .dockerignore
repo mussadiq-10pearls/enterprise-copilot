@@ -1,0 +1,61 @@
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environment
+.env
+.venv
+venv/
+ENV/
+env/
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+
+# Logs and databases
+*.log
+*.sqlite
+*.sqlite3
+data/*.json
+!data/.gitkeep
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# Docker files (not needed inside the image)
+Dockerfile
+.dockerignore
+
+# Local configuration (include only what's needed)
+.env
+.env.*
+!.env.example
+
+# Documentation
+README.md
+docs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Gradio local share links (created at runtime, not needed in build)
+gradio_cached_examples/

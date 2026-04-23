@@ -13,3 +13,12 @@ def detect_prompt_injection(text: str) -> bool:
     ]
     text_lower = text.lower()
     return any(re.search(p, text_lower) for p in patterns)
+
+def detect_sensitive_request(text: str) -> bool:
+    """Return True if the user asks for sensitive information (passwords, credentials, etc.)."""
+    sensitive_keywords = [
+        "password", "admin password", "credentials", "secret", "pwd", 
+        "authorization key", "auth token", "api key", "login", "root password"
+    ]
+    text_lower = text.lower()
+    return any(kw in text_lower for kw in sensitive_keywords)
